@@ -1,5 +1,86 @@
 
 `timescale 1ns/1ps
+
+module tb_arbiter_puf();
+
+parameter C_BITS = 4;
+parameter R_BITS = 4;
+
+parameter [2*4*C_BITS*R_BITS-1:0] DELAY = 128'hA3F50D7C_1A2B3C4D_55667788_99AABBCC;
+
+reg               reset;
+reg               enable;
+reg  [C_BITS-1:0] challenge;
+wire [R_BITS-1:0] resp;
+
+integer i;
+
+// Instantiate DUT
+arbiter_puf #(
+  .C_BITS(C_BITS),
+  .R_BITS(R_BITS),
+  .DELAY(DELAY)
+) DUT_A (
+  .reset(reset),
+  .enable(enable),
+  .challenge(challenge),
+  .resp(resp)
+);
+
+
+initial begin
+  $dumpfile("waveform.vcd");         
+  $dumpvars(0, tb_arbiter_puf);      
+end
+
+// Query the PUF with a challenge input, display the response output.
+task gen_crp;
+input [C_BITS-1:0] challenge_in;
+begin
+  reset = 1'b0;
+  enable = 1'b0;
+  challenge = challenge_in;
+
+  #10
+  reset = 1'b1;
+  #10
+  reset = 1'b0;
+  #10
+  enable = 1'b1;
+
+  #(16*C_BITS)
+
+  $display("Challenge: %04b, Response: %b", challenge, resp[0]);
+
+  enable = 1'b0;
+end
+endtask
+
+initial begin
+  gen_crp(0);
+  gen_crp(1);
+  gen_crp(2);
+  gen_crp(3);
+  gen_crp(4);
+  gen_crp(5);
+  gen_crp(6);
+  gen_crp(7);
+  gen_crp(8);
+  gen_crp(9);
+  gen_crp(10);
+  gen_crp(11);
+  gen_crp(12);
+  gen_crp(13);
+  gen_crp(14);
+  gen_crp(15);
+
+  $stop;
+end
+
+endmodule
+
+
+`timescale 1ns/1ps
 module arbiter_puf #(
   parameter C_BITS = 4, // Challenge Bits
   parameter R_BITS = 4, // Response Bits
