@@ -1,0 +1,126 @@
+#include <iostream>
+#include <cmath> 
+#include "matrix_mult.h"
+#include <cstdlib>
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/operation.hpp>
+
+// Function to generate matrix A and B with random values
+void generateMatrix(mat_a matrix[IN_A_ROWS][IN_A_COLS])
+{
+    for (int i = 0; i < IN_A_ROWS; ++i)
+    {
+        for (int j = 0; j < IN_A_COLS; ++j)
+        {
+        	matrix[i][j] = rand() % 256;
+        }
+    }
+}
+void printMatrix(mat_prod matrix[IN_A_ROWS][IN_B_COLS])
+{
+    for (int i = 0; i < IN_A_ROWS; ++i)
+    {
+        for (int j = 0; j < IN_A_COLS; ++j)
+        {
+            std::cout << matrix[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
+int main()
+{
+	int mismatch = 0;
+    mat_a A[IN_A_ROWS][IN_A_COLS];
+    mat_b B[IN_B_ROWS][IN_B_COLS];
+    mat_prod goldref_prod[IN_A_ROWS][IN_B_COLS];
+    mat_prod prod[IN_A_ROWS][IN_B_COLS];
+
+    /* Generate random matrix A and B */
+    generateMatrix(A);
+    generateMatrix(B);
+
+    //Generate golden reference matrix/
+    boost::numeric::ublas::matrix<float> ublas_A(IN_A_ROWS,IN_A_COLS);
+    boost::numeric::ublas::matrix<float> ublas_B(IN_B_ROWS,IN_B_COLS);
+    boost::numeric::ublas::matrix<float> ublas_prod(IN_A_ROWS,IN_B_COLS);
+
+    for(int i = 0; i < IN_A_ROWS; i++)
+    {
+      for(int j = 0; j < IN_A_COLS; j++)
+		{
+		  ublas_A(i,j) = A[i][j];
+		  ublas_B(i,j) = B[i][j];
+		}
+    }
+
+    boost::numeric::ublas::axpy_prod(ublas_A, ublas_B, ublas_prod);
+
+    for (int i = 0; i < IN_A_ROWS; ++i)
+    {
+       for(int j = 0; j<IN_B_COLS; ++j)
+       {
+    	   goldref_prod[i][j] = ublas_prod(i,j);
+	   }
+	}
+
+    matrix_mult(A,B, prod);
+
+    for (int i = 0; i < IN_A_ROWS; ++i)
+    {
+            for (int j = 0; j < IN_B_COLS; ++j)
+            {
+                if (goldref_prod[i][j] != prod[i][j])
+                {
+                	mismatch = 1;
+                }
+            }
+    }
+
+    if(mismatch)
+    {
+    	std::cout<<"\n Some testcases failed";
+    }
+    else
+    {
+    	std::cout<<"\n All testcases passed!!!";
+    }
+
+}
+
+#include "matrix_mult.h"
+#include "matrix_mult.cpp"
+
+const int size=16
+void generateMatrix(int matrix[][SIZE]) {
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            matrix[i][j] = rand() % 100; // Generate random values between 0 and 99
+        }
+
+void printMatrix(int matrix[][SIZE]) {
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            std::cout << matrix[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
+int main ()
+{
+	mat_a A[16][16];
+	mat_b B[16][16];
+	
+	generateMatrix(A[][16]);
+	generateMatrix(B[][16]);
+	srand(time(NULL));
+	std::cout << "Matrix A:\n";
+    printMatrix(a);
+    std::cout << "\nMatrix B:\n";
+    printMatrix(b);
+	
+	 
+	
+}
+
